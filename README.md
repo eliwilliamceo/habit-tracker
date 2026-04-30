@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# 🎯 Habit Tracker - App de Hábitos con Psicología del Comportamiento
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Una aplicación móvil para iOS y Android que ayuda a los usuarios a construir hábitos consistentes mediante técnicas validadas de psicología del comportamiento.
 
-## Get started
+## 🚀 Características Principales
 
-1. Install dependencies
+- **Seguimiento de Rachas:** Visualiza tu racha actual y mejor racha para mantener la motivación
+- **Habit Stacking:** Vincula nuevos hábitos con rutinas existentes (técnica de James Clear)
+- **Persistencia de Datos:** Tus hábitos se guardan localmente y no se pierden
+- **Dashboard de Progreso:** Estadísticas semanales y mensuales de cumplimiento
+- **UX Ultra Rápida:** Sin loaders visibles, feedback inmediato al completar
 
-   ```bash
-   npm install
-   ```
+## 🧠 Psicología del Comportamiento Aplicada
 
-2. Start the app
+Esta app no es solo un tracker. Está diseñada con principios de:
 
-   ```bash
-   npx expo start
-   ```
+1. **Intenciones de Implementación:** El usuario define CUÁNDO y DÓNDE hará el hábito
+2. **Reducción de Fricción:** Interfaz minimalista para completar hábitos en 1 toque
+3. **Refuerzo Positivo:** Feedback visual inmediato con colores y animaciones
+4. **Identidad de Hábito:** Las rachas ayudan al usuario a verse como "alguien que cumple"
 
-In the output, you'll find options to open the app in a
+## 🛠️ Tecnologías Utilizadas
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+| Tecnología       | Propósito                                       |
+| :--------------- | :---------------------------------------------- |
+| React Native     | Desarrollo móvil multiplataforma                |
+| Expo             | Framework de desarrollo y deployment            |
+| Zustand          | Gestión de estado global (más ligero que Redux) |
+| Expo SecureStore | Persistencia de datos local segura              |
+| TypeScript       | Tipado estático para código más seguro          |
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📦 Instalación y Ejecución
 
-## Get a fresh project
+### Requisitos Previos
 
-When you're ready, run:
+- Node.js (versión LTS)
+- Expo Go (app en tu teléfono)
+
+### Pasos
 
 ```bash
-npm run reset-project
+# 1. Clonar el repositorio
+git clone https://github.com/TU_USUARIO/habit-tracker.git
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Iniciar el servidor de desarrollo
+npx expo start
+
+# 4. Escanear el QR con Expo Go
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
