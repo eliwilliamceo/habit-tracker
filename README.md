@@ -50,3 +50,12 @@ npx expo start
 
 # 4. Escanear el QR con Expo Go
 ```
+
+## 🚧 Roadmap Futuro
+
+Las siguientes características están planificadas para la v2.0:
+
+- [ ] Notificaciones push (requiere development build con EAS)
+- [ ] Modo oscuro
+- [ ] Exportar progreso a CSV
+- [ ] Widgets para pantalla de inicio

@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { useHabitStore } from "../src/store/useHabitStore";
+import { useHabitStore } from "../../src/store/useHabitStore";
 
 export default function AddHabitScreen() {
   const addHabit = useHabitStore((state) => state.addHabit);

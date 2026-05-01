@@ -9,7 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useHabitStore } from "../src/store/useHabitStore";
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
+import { useHabitStore } from "../../src/store/useHabitStore";
 
 const COLORS = {
   health: "#10B981",
@@ -20,7 +24,7 @@ const COLORS = {
 };
 
 export default function HomeScreen() {
-  const { habits, toggleHabit, addHabit } = useHabitStore();
+  const { habits, toggleHabit } = useHabitStore();
   const today = new Date().toISOString().split("T")[0];
 
   // Calcular porcentaje de completado hoy
@@ -80,9 +84,8 @@ export default function HomeScreen() {
                       <Text style={styles.streakText}>{habit.streak} días</Text>
                     </View>
                   </View>
-                  <Ionicons
-                    name={isDone ? "checkmark-circle" : "ellipse-outline"}
-                    size={32}
+                  <AnimatedIcon
+                    isDone={isDone}
                     color={isDone ? COLORS[habit.category] : "#D1D5DB"}
                   />
                 </View>
@@ -94,6 +97,29 @@ export default function HomeScreen() {
 
       <StatusBar style="auto" />
     </SafeAreaView>
+  );
+}
+
+// Componente separado para el ícono animado
+function AnimatedIcon({ isDone, color }: { isDone: boolean; color: string }) {
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: withSpring(isDone ? 1.1 : 1, { damping: 12, stiffness: 150 }),
+        },
+      ],
+    };
+  });
+
+  return (
+    <Animated.View style={animatedStyle}>
+      <Ionicons
+        name={isDone ? "checkmark-circle" : "ellipse-outline"}
+        size={32}
+        color={color}
+      />
+    </Animated.View>
   );
 }
 

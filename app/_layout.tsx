@@ -1,24 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+// app/_layout.tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#10B981', tabBarStyle: { backgroundColor: '#fff' } }}>
+      <Tabs.Screen 
+        name="(tabs)/index" 
+        options={{ 
+          title: 'Hoy', 
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="(tabs)/add" 
+        options={{ 
+          title: 'Nuevo', 
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={24} color={color} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="(tabs)/dashboard" 
+        options={{ 
+          title: 'Progreso', 
+          tabBarIcon: ({ color }) => <Ionicons name="stats-chart" size={24} color={color} /> 
+        }} 
+      />
+    </Tabs>
   );
 }

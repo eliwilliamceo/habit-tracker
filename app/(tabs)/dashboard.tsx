@@ -2,7 +2,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useHabitStore } from "../src/store/useHabitStore";
+import { useHabitStore } from "../../src/store/useHabitStore";
 
 export default function DashboardScreen() {
   const habits = useHabitStore((state) => state.habits);
@@ -10,20 +10,26 @@ export default function DashboardScreen() {
 
   // Calcular estadísticas
   const completedToday = habits.filter((h) =>
-    h.completedDates.includes(today),
+    h.completedDates?.includes(today),
   ).length;
   const totalHabits = habits.length;
   const completionRate =
     totalHabits === 0 ? 0 : Math.round((completedToday / totalHabits) * 100);
 
-  // Calcular mejor racha
-  const bestStreak = 0;
+  // Calcular mejor racha (forma segura sin spread operator)
+  let bestStreak = 0;
+  for (let i = 0; i < habits.length; i++) {
+    const habitStreak = habits[i].bestStreak || 0;
+    if (habitStreak > bestStreak) {
+      bestStreak = habitStreak;
+    }
+  }
 
   // Calcular total de completados históricos
-  const totalCompleted = habits.reduce(
-    (acc, h) => acc + (h.completedDates?.length || 0),
-    0,
-  );
+  let totalCompleted = 0;
+  for (let i = 0; i < habits.length; i++) {
+    totalCompleted += habits[i].completedDates?.length || 0;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
