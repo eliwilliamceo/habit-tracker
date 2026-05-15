@@ -1,88 +1,150 @@
-// src/store/useHabitStore.ts
-import * as SecureStore from "expo-secure-store"; // ⭐ Cambiar esta línea
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { habitService } from "../services/habitService";
+import { notificationService } from "../services/notificationService";
 
-const expoStorage = {
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
-};
-// 1. Definimos qué es un "Hábito" para que TypeScript nos ayude
-export interface Habit {
-  id: string;
-  title: string;
-  category: "health" | "work" | "mind";
-  streak: number;
-  bestStreak: number;
-  completedDates: string[];
-  stackTrigger?: string; // ⭐ Agregar esta línea
-  color: string;
+export interface Reminder {
+  id: number;
+  hour: number;
+  minute: number;
 }
 
-// 2. Definimos el estado inicial y las acciones
+export interface Habit {
+  id: number;
+  name: string;
+  anchor?: string | null;
+  reminders: Reminder[];
+  completedToday: boolean;
+}
+
+// Lo que el form pasa al store antes de tener un id en DB.
+export type ReminderInput = { hour: number; minute: number };
+
 interface HabitState {
   habits: Habit[];
+  isLoading: boolean;
+  fetchHabits: () => Promise<void>;
   addHabit: (
-    habit: Omit<Habit, "id" | "streak" | "bestStreak" | "completedDates">,
-  ) => void;
-  toggleHabit: (id: string) => void;
+    name: string,
+    options?: {
+      reminders?: ReminderInput[];
+      anchor?: string | null;
+    },
+  ) => Promise<void>;
+  removeHabit: (id: number) => Promise<void>;
+  recordCheckIn: (id: number) => Promise<void>;
+  updateHabit: (
+    id: number,
+    options: {
+      name: string;
+      anchor: string | null;
+      reminders: ReminderInput[];
+    },
+  ) => Promise<void>;
 }
 
-// Función auxiliar para obtener la fecha de hoy en texto
-const getTodayString = () => new Date().toISOString().split("T")[0];
+// Helper interno: persiste recordatorios para un hábito + agenda notificaciones.
+// Pide permisos si hay al menos uno y aún no se concedieron.
+async function persistRemindersFor(
+  habitId: number,
+  habitName: string,
+  inputs: ReminderInput[],
+): Promise<Reminder[]> {
+  if (inputs.length === 0) return [];
 
-// 3. Creamos el Store (La Mochila)
-export const useHabitStore = create<HabitState>()(
-  persist(
-    (set, get) => ({
-      habits: [], // Empezamos sin hábitos
+  const granted = await notificationService.requestPermissions();
+  if (!granted) return [];
 
-      // Acción: Agregar un hábito nuevo
-      addHabit: (habitData) =>
-        set((state) => ({
-          habits: [
-            ...state.habits,
-            {
-              ...habitData,
-              id: Math.random().toString(36).substr(2, 9),
-              streak: 0,
-              bestStreak: 0, // ⭐ Asegurar que siempre se inicialice
-              completedDates: [],
-            },
-          ],
-        })),
+  const persisted: Reminder[] = [];
+  for (const r of inputs) {
+    const reminderId = await habitService.addReminder(habitId, r.hour, r.minute);
+    await notificationService.scheduleReminder(reminderId, habitName, r.hour, r.minute);
+    persisted.push({ id: reminderId, hour: r.hour, minute: r.minute });
+  }
+  return persisted;
+}
 
-      // Acción: Marcar/Demarcar hábito como completado
-      toggleHabit: (id) => {
-        const today = getTodayString();
-        set((state) => {
-          const habits = state.habits.map((h) => {
-            if (h.id !== id) return h;
+export const useHabitStore = create<HabitState>((set, get) => ({
+  habits: [],
+  isLoading: false,
 
-            const isCompletedToday = h.completedDates.includes(today);
-            let newDates = [...h.completedDates];
-            let newStreak = h.streak;
+  fetchHabits: async () => {
+    set({ isLoading: true });
+    try {
+      const habits = await habitService.getAllHabits();
+      set({ habits, isLoading: false });
+    } catch (error) {
+      console.error("Error fetching habits:", error);
+      set({ isLoading: false });
+    }
+  },
 
-            if (isCompletedToday) {
-              // Si ya estaba hecho, lo deshacemos (permitir errores es clave psicológico)
-              newDates = newDates.filter((d) => d !== today);
-              newStreak = Math.max(0, newStreak - 1);
-            } else {
-              // Si no estaba hecho, lo completamos
-              newDates.push(today);
-              newStreak += 1;
-            }
+  addHabit: async (name, options = {}) => {
+    const { reminders: reminderInputs = [], anchor = null } = options;
+    try {
+      const id = await habitService.createHabit(name, anchor);
+      const reminders = await persistRemindersFor(id, name, reminderInputs);
+      set((state) => ({
+        habits: [
+          { id, name, anchor, reminders, completedToday: false },
+          ...state.habits,
+        ],
+      }));
+    } catch (error) {
+      console.error("Error adding habit:", error);
+    }
+  },
 
-            return { ...h, completedDates: newDates, streak: newStreak };
-          });
-          return { habits };
-        });
-      },
-    }),
-    {
-      name: "habit-storage",
-      storage: createJSONStorage(() => expoStorage), // ⭐ Usar nuestro adaptador
-    },
-  ),
-);
+  removeHabit: async (id) => {
+    try {
+      // Cancela todas las notificaciones de este hábito
+      const habit = get().habits.find((h) => h.id === id);
+      for (const r of habit?.reminders ?? []) {
+        await notificationService.cancelReminder(r.id);
+      }
+      await habitService.deleteHabit(id);
+      set((state) => ({
+        habits: state.habits.filter((h) => h.id !== id),
+      }));
+    } catch (error) {
+      console.error("Error removing habit:", error);
+    }
+  },
+
+  recordCheckIn: async (id) => {
+    try {
+      await habitService.recordCheckIn(id);
+      set((state) => ({
+        habits: state.habits.map((h) =>
+          h.id === id ? { ...h, completedToday: true } : h,
+        ),
+      }));
+    } catch (error) {
+      console.error("Error recording check-in:", error);
+    }
+  },
+
+  // Edición: actualiza nombre/ancla + reconcilia la lista completa de
+  // recordatorios (borra todos y reinserta — simple y robusto a esta escala).
+  updateHabit: async (id, { name, anchor, reminders: reminderInputs }) => {
+    try {
+      await habitService.updateHabit(id, name, anchor);
+
+      // Cancela y borra recordatorios actuales
+      const current = get().habits.find((h) => h.id === id);
+      for (const r of current?.reminders ?? []) {
+        await notificationService.cancelReminder(r.id);
+      }
+      await habitService.removeAllRemindersForHabit(id);
+
+      const newReminders = await persistRemindersFor(id, name, reminderInputs);
+
+      set((state) => ({
+        habits: state.habits.map((h) =>
+          h.id === id ? { ...h, name, anchor, reminders: newReminders } : h,
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating habit:", error);
+    }
+  },
+}));
