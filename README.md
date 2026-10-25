@@ -1,61 +1,69 @@
-# 🎯 Habit Tracker - App de Hábitos con Psicología del Comportamiento
+# 🎯 Habit Tracker
 
-Una aplicación móvil para iOS y Android que ayuda a los usuarios a construir hábitos consistentes mediante técnicas validadas de psicología del comportamiento.
+App móvil para iOS y Android que ayuda a construir hábitos que duren, aplicando técnicas de psicología del comportamiento.
 
-## 🚀 Características Principales
+<p align="center">
+  <img src="screenshots/home.jpeg" width="240" alt="Pantalla de inicio" />
+  <img src="screenshots/add.jpeg" width="240" alt="Crear hábito" />
+  <img src="screenshots/dashboard.jpeg" width="240" alt="Detalle y estadísticas" />
+</p>
 
-- **Seguimiento de Rachas:** Visualiza tu racha actual y mejor racha para mantener la motivación
-- **Habit Stacking:** Vincula nuevos hábitos con rutinas existentes (técnica de James Clear)
-- **Persistencia de Datos:** Tus hábitos se guardan localmente y no se pierden
-- **Dashboard de Progreso:** Estadísticas semanales y mensuales de cumplimiento
-- **UX Ultra Rápida:** Sin loaders visibles, feedback inmediato al completar
+## Qué hace
 
-## 🧠 Psicología del Comportamiento Aplicada
+- **Check-in en un toque** y cálculo automático de rachas (actual y mejor).
+- **Habit stacking:** cada hábito nuevo se ancla a una rutina que ya tienes ("después del café, leo 10 minutos").
+- **Recordatorios:** varios avisos diarios por hábito, con notificaciones locales.
+- **Estadísticas:** racha, total de días, % de cumplimiento en los últimos 30 días y mapa de calor de 5 semanas.
+- **Tema claro/oscuro** según el sistema, y **español e inglés**.
+- **Onboarding** de 3 pantallas para usuarios nuevos.
+- **Funciona sin conexión:** los datos se guardan en el propio móvil.
 
-Esta app no es solo un tracker. Está diseñada con principios de:
+## La psicología detrás
 
-1. **Intenciones de Implementación:** El usuario define CUÁNDO y DÓNDE hará el hábito
-2. **Reducción de Fricción:** Interfaz minimalista para completar hábitos en 1 toque
-3. **Refuerzo Positivo:** Feedback visual inmediato con colores y animaciones
-4. **Identidad de Hábito:** Las rachas ayudan al usuario a verse como "alguien que cumple"
+1. **Intenciones de implementación:** decides cuándo y dónde harás el hábito.
+2. **Menos fricción:** completar un hábito cuesta un toque.
+3. **Refuerzo inmediato:** feedback visual y háptico al marcarlo.
+4. **Identidad:** la racha te ayuda a verte como "alguien que cumple".
 
-## 🛠️ Tecnologías Utilizadas
+## Construida con IA
 
-| Tecnología       | Propósito                                       |
-| :--------------- | :---------------------------------------------- |
-| React Native     | Desarrollo móvil multiplataforma                |
-| Expo             | Framework de desarrollo y deployment            |
-| Zustand          | Gestión de estado global (más ligero que Redux) |
-| Expo SecureStore | Persistencia de datos local segura              |
-| TypeScript       | Tipado estático para código más seguro          |
+La app está desarrollada trabajando con **Claude** (Anthropic) como asistente de programación, en más de 20 sesiones documentadas. El repo incluye el método de trabajo completo:
 
-## 📦 Instalación y Ejecución
+- [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md): qué es, para qué se construye y qué no es objetivo.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md): decisiones técnicas y por qué.
+- [`CLAUDE_HISTORY.md`](CLAUDE_HISTORY.md): bitácora de cada sesión con la IA, con lo que se hizo y las decisiones tomadas.
+- [`TODO.md`](TODO.md): lo pendiente.
 
-### Requisitos Previos
+Mi papel: definir el producto, tomar las decisiones y dirigir y revisar el trabajo de la IA.
 
-- Node.js (versión LTS)
-- Expo Go (app en tu teléfono)
+## Tecnología
 
-### Pasos
+| Tecnología | Para qué |
+|---|---|
+| React Native + Expo | App multiplataforma iOS/Android |
+| TypeScript | Código tipado |
+| Zustand | Estado global |
+| expo-sqlite | Base de datos local |
+| expo-notifications | Recordatorios |
+| i18next | Español e inglés |
+| Sentry | Registro de errores (opcional) |
+
+## Probarla en local
+
+Necesitas Node.js (LTS) y la app **Expo Go** en el móvil.
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/TU_USUARIO/habit-tracker.git
-
-# 2. Instalar dependencias
+git clone https://github.com/eliwilliamceo/habit-tracker.git
+cd habit-tracker
 npm install
-
-# 3. Iniciar el servidor de desarrollo
-npx expo start
-
-# 4. Escanear el QR con Expo Go
+npx expo start   # escanea el QR con Expo Go
 ```
 
-## 🚧 Roadmap Futuro
+## Próximos pasos
 
-Las siguientes características están planificadas para la v2.0:
+- Publicación en App Store y Google Play.
+- Después: cuentas de usuario y sincronización con backend.
 
-- [ ] Notificaciones push (requiere development build con EAS)
-- [ ] Modo oscuro
-- [ ] Exportar progreso a CSV
-- [ ] Widgets para pantalla de inicio
+---
+
+Creado por **William Segovia** · [LinkedIn](https://www.linkedin.com/in/william-segovia)
